@@ -17,6 +17,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [plants, setPlants] = useState([]);
+  const [activeTab, setActiveTab] = useState("home");
 
   const fetchData = async () => {
   if(!city.trim()){
@@ -860,6 +861,96 @@ const healthChartData =
               ); 
             })
         )}
+
+        <div style={{
+          position: "fixed",
+          bottom: "15px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "90%",
+          maxWidth: "500px",
+          background: isNight
+          ? "rgba(20,20,30,0.75)"
+          : "rgba(255,255,255,0.7)",
+          backdropFilter: "blur(20px)",
+          border: "1px solid rgba(255,255,255,0.15)",
+          borderRadius: "25px",
+          padding: "12px 10px",
+          display: "flex",
+          justifyContent: "space-around",
+          alignItems: "center",
+          boxShadow: "0 8px 25px rgba(0,0,0,0.15)",
+          zIndex: 999
+        }}>
+
+          {/* Home */}
+          <div onClick={() => setActiveTab("home")}
+            style={{
+              textAlign: "center",
+              cursor: "pointer",
+              opacity: activeTab === "home" ? 1 : 0.6,
+              transition: "0.3s"
+            }}>
+              <div style={{fontSize:"24px"}}> 🏠 </div>
+              <div style={{
+                fontSize: "12px",
+                color: textPrimary
+              }}>
+                Inicio
+              </div>
+          </div>
+
+          {/* Stats */}
+          <div onClick={() => setActiveTab("stats")}
+            style={{
+              textAlign: "center",
+              cursor: "pointer",
+              opacity: activeTab === "stats" ? 1 : 0.6,
+              transition: "0.3s"
+            }}>
+              <div style={{ fontSize: "24px" }}>📈</div>
+              <div style={{
+                fontSize: "12px",
+                color: textPrimary
+              }}> Stats 
+              </div>
+            </div>
+
+            {/* Plants */}
+          <div onClick={() => setActiveTab("plants")}
+            style={{
+              textAlign: "center",
+              cursor: "pointer",
+              opacity: activeTab === "plants" ? 1 : 0.6,
+              transition: "0.3s"
+            }}>
+              <div style={{fontSize:"24px"}}> 🌱 </div>
+              <div style={{
+                fontSize: "12px",
+                color: textPrimary
+              }}>
+                Plantas
+              </div>
+          </div>
+
+          {/* Profile */}
+          <div onClick={() => setActiveTab("profile")}
+            style={{
+              textAlign: "center",
+              cursor: "pointer",
+              opacity: activeTab === "profile" ? 1 : 0.6,
+              transition: "0.3s"
+            }}>
+              <div style={{fontSize:"24px"}}> 👤 </div>
+              <div style={{
+                fontSize: "12px",
+                color: textPrimary
+              }}>
+                Perfil
+              </div>
+          </div>
+          
+        </div>
     </motion.div>
   </div>
 );

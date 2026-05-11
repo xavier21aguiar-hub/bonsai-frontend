@@ -19,6 +19,10 @@ function App() {
   const [plants, setPlants] = useState([]);
   const [activeTab, setActiveTab] = useState("home");
 
+  const toggleTheme = () => {
+    setIsNight(!isNight);
+  };
+
   const fetchData = async () => {
   if(!city.trim()){
     alert("Ingresa una ciudad");
@@ -138,6 +142,16 @@ const waterPlant = async (id) => {
   }
 };
 
+const quickWater = () => {
+
+  if (plants.length === 0) {
+    alert("No hay plantas");
+    return;
+  }
+
+  waterPlant(plants[0]._id);
+};
+
 let healthColor = "#4CAF50";
 
 if (data?.health?.score < 80) {
@@ -252,10 +266,12 @@ const getPlantMood = (plant) => {
   };
 };
 
-let isNight = false;
-if (hour >= 19 || hour <= 6){
-  isNight = true;
-}
+const prefersDarkMode =
+  window.matchMedia &&
+  window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+const [isNight, setIsNight] = useState(prefersDarkMode);
+
 const cardBackground = isNight
   ? "rgba(20,20,30,0.55)"
   : "rgba(255,255,255,0.45)";
@@ -315,6 +331,23 @@ const healthChartData =
         }}>
         Bonsai Care 🌱
       </h1>
+
+      <button onClick={toggleTheme} style={{
+        marginBottom: "20px",
+        padding: "10px 15px",
+        borderRadius: "12px",
+        border: "none",
+        background: isNight
+          ? "#f5f5f5"
+          : "#2d3748",
+        color: isNight
+          ? "#2d3748"
+          : "white",
+        cursor: "pointer",
+        fontWeight: "bold"
+      }}>
+        {isNight ? "☀️ Light" : "🌙 Dark"}
+      </button>
 
       <input
         type="text"
@@ -492,7 +525,9 @@ const healthChartData =
             </p>
 
             <div style={{
-              background: "#ddd",
+              background: isNight
+              ? "rgba(255,255,255,0.12)"
+              : "#ddd",
               borderRadius: "20px",
               overflow: "hidden",
               height: "20px"
@@ -546,7 +581,9 @@ const healthChartData =
           <div style={{ marginTop: "15px" }}>
             
             <div style={{
-              background: "#ddd",
+              background: isNight
+              ? "rgba(255,255,255,0.12)"
+              : "#ddd",
               borderRadius: "20px",
               overflow: "hidden",
               height: "25px",
@@ -630,12 +667,12 @@ const healthChartData =
                     margin: 0,
                     fontWeight: "bold",
                     fontSize: "18px",
-                    color: "#333"
+                    color: textPrimary
                   }}> {rec.time.toUpperCase()}</p>
 
                   <p style={{
                     margin: "5px 0 0 0",
-                    color: "#444"
+                    color: textSecondary
                   }}> {rec.message}</p>
                 
                 </div>
@@ -808,7 +845,7 @@ const healthChartData =
 
                       <p style={{
                         margin: "5px 0 0 0",
-                        color: "#333",
+                        color: textPrimary,
                         fontWeight: "500",
                         fontStyle: "italic"
                       }}>
@@ -830,7 +867,7 @@ const healthChartData =
 
                   <p style={{
                     fontWeight: "bold",
-                    color: "#333"
+                    color: textPrimary
                   }}>
                     Hace {status.daysSinceWatering} día(s)
                   </p>
@@ -838,7 +875,7 @@ const healthChartData =
                   {/* HISTORIAL */}
                   <h4 style={{
                     marginTop: "20px",
-                    color: "#333"
+                    color: textPrimary
                   }}>📅 Historial</h4>
 
                   <ul style={{ listStyle: "none", padding: 0 }}>
@@ -849,7 +886,7 @@ const healthChartData =
                     
                     <li key={i} style={{
                       marginBottom: "8px",
-                      color: "#444"
+                      color: textSecondary
                     }}>
                       💧 {new Date(date).toLocaleString()}
                     </li>
@@ -878,7 +915,43 @@ const healthChartData =
         )}
     </motion.div>
 
-    <div style={{
+    <motion.button onClick={quickWater}
+      
+      whileHover={{
+        scale: 1.08
+      }}
+
+      whileTap={{
+        scale: 0.94
+      }}
+
+      animate={{
+        y: [0, -5, 0]
+      }}
+
+      transition={{
+        duration: 2,
+        repeat: Infinity
+      }}
+
+      style={{
+        position: "fixed",
+        bottom: "110px",
+        right: "25px",
+        width: "70px",
+        height: "70px",
+        borderRadius: "50%",
+        border: "none",
+        background: "linear-gradient(135deg, #4CAF50, #81C784)",
+        color: "white",
+        fontSize: "30px",
+        cursor: "pointer",
+        boxShadow: "0 10px 25px rgba(76,175,80,0.4)",
+        zIndex: 1000
+      }}> 💧
+      </motion.button>
+
+        <div style={{
           position: "fixed",
           bottom: "25px",
           paddingBottom: "env(safe-area-inset-bottom)",

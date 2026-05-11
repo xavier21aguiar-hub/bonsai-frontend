@@ -436,7 +436,7 @@ const healthChartData =
             <h2 style={{
               margin: 0,
               fontSize: "55px",
-              color: textPrimary
+              color: textSecondary
             }}> {Math.round(data.climate.temperature)}° </h2>
 
             <p style={{

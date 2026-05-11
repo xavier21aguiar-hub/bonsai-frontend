@@ -19,6 +19,34 @@ function App() {
   const [plants, setPlants] = useState([]);
   const [activeTab, setActiveTab] = useState("home");
 
+  const prefersDarkMode =
+  window.matchMedia &&
+  window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+const [isNight, setIsNight] = useState(prefersDarkMode);
+
+const cardBackground = isNight
+  ? "rgba(20,20,30,0.55)"
+  : "rgba(255,255,255,0.45)";
+
+const textPrimary = isNight
+  ? "#f5f5f5"
+  : "#2d3748";
+
+const textSecondary = isNight
+  ? "#d1d5db"
+  : "#555";
+
+const inputBackground = isNight
+  ? "rgba(255,255,255,0.1)"
+  : "rgba(255,255,255,0.7)";
+
+const healthChartData =
+  plants[0]?.healthHistory?.map(entry => ({
+    date: new Date(entry.date).toLocaleDateString(),
+    health: entry.value
+  })) || [];
+
   const toggleTheme = () => {
     setIsNight(!isNight);
   };
@@ -265,34 +293,6 @@ const getPlantMood = (plant) => {
   };
 };
 
-const prefersDarkMode =
-  window.matchMedia &&
-  window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-const [isNight, setIsNight] = useState(prefersDarkMode);
-
-const cardBackground = isNight
-  ? "rgba(20,20,30,0.55)"
-  : "rgba(255,255,255,0.45)";
-
-const textPrimary = isNight
-  ? "#f5f5f5"
-  : "#2d3748";
-
-const textSecondary = isNight
-  ? "#d1d5db"
-  : "#555";
-
-const inputBackground = isNight
-  ? "rgba(255,255,255,0.1)"
-  : "rgba(255,255,255,0.7)";
-
-const healthChartData =
-  plants[0]?.healthHistory?.map(entry => ({
-    date: new Date(entry.date).toLocaleDateString(),
-    health: entry.value
-  })) || [];
-
   return (
   <div style={{
     display: "flex",
@@ -398,7 +398,7 @@ const healthChartData =
 
       {city && (
         <p style={{
-          color: "black",
+          color: textPrimary,
           marginTop: "-10px",
           marginBottom: "20px"
         }}> 🌿 Bienvenido de nuevo — {city} </p>
@@ -555,7 +555,9 @@ const healthChartData =
           
           <ul style={{ listStyle: "none", padding: 0 }}>
             {data.recommendations.map((rec, i) => {
-              let color = "#e8f5e9";
+              let color = isNight
+                ? "rgba(255,255,255,0.08)"
+                : "#e8f5e9";
               
               if (rec.action === "REGAR") color = "#d0f0c0";
               if (rec.action === "SACAR") color = "#fff3cd";
@@ -612,7 +614,7 @@ const healthChartData =
           </div>
           
           {/* TIMELINE */}
-          <h3 style={{ color: "#2d3748" }}>🕒 Plan del día</h3>
+          <h3 style={{ color: textPrimary}}>🕒 Plan del día</h3>
           
           <div style={{
             marginTop: "20px",

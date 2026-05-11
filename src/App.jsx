@@ -9,7 +9,9 @@ import {LineChart,
 } from "recharts";
 import { motion } from "framer-motion";
 
-const API_URL = "https://bonsai-api-15un.onrender.com/api/bonsai";
+const API_URL = import.meta.env.VITE_API_URL;
+
+axios.get(`${API_URL}/bonsai/care?...`)
 
 function App() {
   const [city, setCity] = useState("");

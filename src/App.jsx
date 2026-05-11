@@ -287,7 +287,7 @@ const healthChartData =
     background,
     transition: "all 0.8s ease",
     fontFamily: "Arial",
-    padding: "20px"
+    padding: "20px 20px 120px 20px"
   }}>
     
     <motion.div 
@@ -372,7 +372,7 @@ const healthChartData =
         }}> 🌿 Bienvenido de nuevo — {city} </p>
       )}
 
-      {data && (
+      {data && activeTab === "home" && (
         <div style={{ marginTop: "20px" }}>
           
           {/* Clima */}
@@ -574,7 +574,9 @@ const healthChartData =
               <p>{data.health.status}</p>
             
           </div>
-
+          
+          {activeTab === "stats" && (
+          <>
           <div style={{
             marginTop: "30px",
             padding: "20px",
@@ -638,6 +640,8 @@ const healthChartData =
                 {data.healthPrediction}
               </p>
             </div>
+          )}
+          </>
           )}
           
           {/* TIMELINE */}
@@ -713,7 +717,9 @@ const healthChartData =
           </div>
 
       )}
-
+          
+          {activeTab === "plants" && (
+          <>
           <h3 style={{marginTop: "25px",
             color: textPrimary
           }}>🌿 Mis plantas</h3>
@@ -821,7 +827,7 @@ const healthChartData =
                   }}>
                     Hace {status.daysSinceWatering} día(s)
                   </p>
-
+                  
                   {/* HISTORIAL */}
                   <h4 style={{
                     marginTop: "20px",
@@ -858,8 +864,10 @@ const healthChartData =
                     }}> 💧 Regar </button>
 
                 </motion.div>
-              ); 
+              );
             })
+          )}
+          </>
         )}
 
         <div style={{
@@ -949,7 +957,7 @@ const healthChartData =
                 Perfil
               </div>
           </div>
-          
+
         </div>
     </motion.div>
   </div>

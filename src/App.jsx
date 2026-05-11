@@ -180,28 +180,27 @@ if (data?.climate.humidity > 75) {
   weatherDescription = "Ambiente húmedo 🌧️";
 }
 
-let background = "#f3f4f6";
+let background = isNight
+  ? "linear-gradient(to bottom, #0f172a, #1e293b)"
+  : "#f3f4f6";
 
-if (data?.climate.temperature > 28) {
-  background = "linear-gradient(to bottom, #fbc2eb, #fcd34d)";
+/* CALOR */
+if (!isNight && data?.climate.temperature > 28) {
+  background =
+    "linear-gradient(to bottom, #fbc2eb, #fcd34d)";
 }
 
-if (data?.climate.humidity > 70) {
-  background = "linear-gradient(to bottom, #74ebd5, #ACB6E5)";
+/* HUMEDAD */
+if (!isNight && data?.climate.humidity > 70) {
+  background =
+    "linear-gradient(to bottom, #74ebd5, #ACB6E5)";
 }
 
-if (data?.climate.temperature < 10) {
-  background = "linear-gradient(to bottom, #cfd9df, #e2ebf0)";
+/* FRÍO */
+if (!isNight && data?.climate.temperature < 10) {
+  background =
+    "linear-gradient(to bottom, #cfd9df, #e2ebf0)";
 }
-
-const hour = new Date().getHours();
-
-if (hour >= 19 || hour <= 6) {
-  background = "linear-gradient(to bottom, #141E30, #243B55)";
-}
-
-const textColor =
-hour >= 19 || hour <= 6 ? "white" : "#333";
 
 const getPlantStatus = (plant) => {
   const daysSinceWatering =
@@ -437,7 +436,7 @@ const healthChartData =
             <h2 style={{
               margin: 0,
               fontSize: "55px",
-              color: "#2d3748"
+              color: textPrimary
             }}> {Math.round(data.climate.temperature)}° </h2>
 
             <p style={{
@@ -576,7 +575,7 @@ const healthChartData =
             })}
           </ul>
 
-          <h2 style={{ color: "#2d3748" }}>🧠 Salud de la planta</h2>
+          <h2 style={{ color: textPrimary }}>🧠 Salud de la planta</h2>
           
           <div style={{ marginTop: "15px" }}>
             

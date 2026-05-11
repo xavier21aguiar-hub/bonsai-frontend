@@ -11,8 +11,6 @@ import { motion } from "framer-motion";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-axios.get(`${API_URL}/bonsai/care?...`)
-
 function App() {
   const [city, setCity] = useState("");
   const [data, setData] = useState(null);
@@ -31,7 +29,7 @@ function App() {
     setError(null);
 
     const response = await fetch(
-      `${API_URL}/care?city=${city}`
+      `${API_URL}/api/bonsai/care?city=${city}`
     );
 
     const result = await response.json();
@@ -67,7 +65,7 @@ const getLocation = () => {
         setLoading(true);
 
         const response = await fetch(
-          `${API_URL}/care?lat=${lat}&lon=${lon}`
+          `${API_URL}/api/bonsai/care?lat=${lat}&lon=${lon}`
         );
 
         const result = await response.json();
@@ -88,7 +86,7 @@ const getLocation = () => {
 
   const loadPlants = async () => {
   try {
-    const res = await fetch(`${API_URL}/all`);
+    const res = await fetch(`${API_URL}/api/bonsai/all`);
     const data = await res.json();
 
     console.log("DATA FROM BACKEND:", data);
@@ -107,7 +105,7 @@ useEffect(() => {
     setCity(savedCity);
 
     fetch(
-      `${API_URL}/care?city=${savedCity}`
+      `${API_URL}/api/bonsai/care?city=${savedCity}`
     )
 
     .then(res => res.json())
@@ -122,7 +120,7 @@ useEffect(() => {
 
 const waterPlant = async (id) => {
   try {
-    await fetch(`${API_URL}/water`, {
+    await fetch(`${API_URL}/api/bonsai/water`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

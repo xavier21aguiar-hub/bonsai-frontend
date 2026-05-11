@@ -575,71 +575,6 @@ const healthChartData =
             
           </div>
           
-          <div style={{
-            marginTop: "30px",
-            padding: "20px",
-            borderRadius: "20px",
-            background: isNight
-            ? "rgba(255,255,255,0.08)"
-            : "rgba(255,255,255,0.35)",
-            backdropFilter: "blur(10px)",
-            boxShadow: "0 6px 15px rgba(0,0,0,0.08)" 
-          }}>
-            
-            <h2 style={{
-              color: textPrimary,
-              marginBottom: "20px"
-            }}>
-              📈 Evolución de salud
-            </h2>
-            
-            <ResponsiveContainer width="100%" height={250}>
-              
-              <LineChart data={healthChartData}>
-                
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis domain={[0, 100]} />
-                <Tooltip />
-                
-                <Line
-                type="monotone"
-                dataKey="health"
-                stroke="#4CAF50"
-                strokeWidth={4}
-                dot={{ r: 5 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-          {data.healthPrediction && (
-            <div style={{
-              marginTop: "25px",
-              padding: "20px",
-              borderRadius: "20px",
-              background: isNight
-              ? "rgba(255,255,255,0.08)"
-              : "rgba(255,255,255,0.35)",
-              backdropFilter: "blur(10px)",
-              boxShadow: "0 6px 15px rgba(0,0,0,0.08)"
-            }}>
-              <h2 style={{
-                color: textPrimary,
-                marginTop: 0
-              }}> 🔮 Predicción de salud 
-              </h2>
-
-              <p style={{
-                color: textSecondary,
-                fontSize: "17px",
-                lineHeight: "1.5"
-              }}>
-                {data.healthPrediction}
-              </p>
-            </div>
-          )}
-          
           {/* TIMELINE */}
           <h3 style={{ color: "#2d3748" }}>🕒 Plan del día</h3>
           
@@ -945,10 +880,11 @@ const healthChartData =
 
     <div style={{
           position: "fixed",
-          bottom: "15px",
+          bottom: "25px",
+          paddingBottom: "env(safe-area-inset-bottom)",
           left: "50%",
           transform: "translateX(-50%)",
-          width: "90%",
+          width: "calc(100% - 40px)",
           maxWidth: "500px",
           background: isNight
           ? "rgba(20,20,30,0.75)"
@@ -1004,17 +940,17 @@ const healthChartData =
               opacity: activeTab === "stats" ? 1 : 0.55,
 
               transform:
-                activeTab === "home"
+                activeTab === "stats"
                   ? "translateY(-5px)"
                   : "translateY(0)",
               background: 
-                activeTab === "home"
+                activeTab === "stats"
                   ? "rgba(255,255,255,0.18)"
                   : "transparent",
               padding: "8px 14px",
               borderRadius: "14px",
               boxShadow:
-                activeTab === "home"
+                activeTab === "stats"
                   ? "0 4px 12px rgba(0,0,0,0.12)"
                   : "none",
               transition: "0.3s"
@@ -1035,17 +971,17 @@ const healthChartData =
               opacity: activeTab === "plants" ? 1 : 0.55,
               
               transform:
-                activeTab === "home"
+                activeTab === "plants"
                   ? "translateY(-5px)"
                   : "translateY(0)",
               background: 
-                activeTab === "home"
+                activeTab === "plants"
                   ? "rgba(255,255,255,0.18)"
                   : "transparent",
               padding: "8px 14px",
               borderRadius: "14px",
               boxShadow:
-                activeTab === "home"
+                activeTab === "plants"
                   ? "0 4px 12px rgba(0,0,0,0.12)"
                   : "none",
               transition: "0.3s"
@@ -1067,17 +1003,17 @@ const healthChartData =
               opacity: activeTab === "profile" ? 1 : 0.55,
               
               transform:
-                activeTab === "home"
+                activeTab === "profile"
                   ? "translateY(-5px)"
                   : "translateY(0)",
               background: 
-                activeTab === "home"
+                activeTab === "profile"
                   ? "rgba(255,255,255,0.18)"
                   : "transparent",
               padding: "8px 14px",
               borderRadius: "14px",
               boxShadow:
-                activeTab === "home"
+                activeTab === "profile"
                   ? "0 4px 12px rgba(0,0,0,0.12)"
                   : "none",
               transition: "0.3s"

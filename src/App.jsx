@@ -575,8 +575,6 @@ const healthChartData =
             
           </div>
           
-          {activeTab === "stats" && (
-          <>
           <div style={{
             marginTop: "30px",
             padding: "20px",
@@ -640,8 +638,6 @@ const healthChartData =
                 {data.healthPrediction}
               </p>
             </div>
-          )}
-          </>
           )}
           
           {/* TIMELINE */}
@@ -714,9 +710,85 @@ const healthChartData =
             })}
           </div>
 
-          </div>
-
+        </div>
       )}
+
+          {activeTab === "stats" && (
+            <>
+            
+            <div style={{
+              marginTop: "30px",
+              padding: "20px",
+              borderRadius: "20px",
+              background: isNight
+              ? "rgba(255,255,255,0.08)"
+              : "rgba(255,255,255,0.35)",
+              backdropFilter: "blur(10px)",
+              boxShadow: "0 6px 15px rgba(0,0,0,0.08)"
+            }}>
+
+            <h2 style={{
+              color: textPrimary,
+              marginBottom: "20px"
+            }}>
+              📈 Evolución de salud
+            </h2>
+            
+            <ResponsiveContainer width="100%" height={250}>
+              
+              <LineChart data={healthChartData}>
+
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis domain={[0, 100]} />
+              <Tooltip />
+              
+              <Line
+              type="monotone"
+              dataKey="health"
+              stroke="#4CAF50"
+              strokeWidth={4}
+              dot={{ r: 5 }}
+              />
+
+              </LineChart>
+
+            </ResponsiveContainer>
+
+            </div>
+            
+            {data?.healthPrediction && (
+
+            <div style={{
+              marginTop: "25px",
+              padding: "20px",
+              borderRadius: "20px",
+              background: isNight
+              ? "rgba(255,255,255,0.08)"
+              : "rgba(255,255,255,0.35)",
+              backdropFilter: "blur(10px)",
+              boxShadow: "0 6px 15px rgba(0,0,0,0.08)"
+            }}>
+
+            <h2 style={{
+              color: textPrimary,
+              marginTop: 0
+            }}>
+              🔮 Predicción de salud
+            </h2>
+
+            <p style={{
+              color: textSecondary,
+              fontSize: "17px",
+              lineHeight: "1.5"
+            }}>
+              {data.healthPrediction}
+            </p>
+
+            </div>
+          )}
+          </>
+        )}
           
           {activeTab === "plants" && (
           <>
@@ -869,8 +941,9 @@ const healthChartData =
           )}
           </>
         )}
+    </motion.div>
 
-        <div style={{
+    <div style={{
           position: "fixed",
           bottom: "15px",
           left: "50%",
@@ -896,7 +969,22 @@ const healthChartData =
             style={{
               textAlign: "center",
               cursor: "pointer",
-              opacity: activeTab === "home" ? 1 : 0.6,
+              opacity: activeTab === "home" ? 1 : 0.55,
+
+              transform:
+                activeTab === "home"
+                  ? "translateY(-5px)"
+                  : "translateY(0)",
+              background: 
+                activeTab === "home"
+                  ? "rgba(255,255,255,0.18)"
+                  : "transparent",
+              padding: "8px 14px",
+              borderRadius: "14px",
+              boxShadow:
+                activeTab === "home"
+                  ? "0 4px 12px rgba(0,0,0,0.12)"
+                  : "none",
               transition: "0.3s"
             }}>
               <div style={{fontSize:"24px"}}> 🏠 </div>
@@ -913,7 +1001,22 @@ const healthChartData =
             style={{
               textAlign: "center",
               cursor: "pointer",
-              opacity: activeTab === "stats" ? 1 : 0.6,
+              opacity: activeTab === "stats" ? 1 : 0.55,
+
+              transform:
+                activeTab === "home"
+                  ? "translateY(-5px)"
+                  : "translateY(0)",
+              background: 
+                activeTab === "home"
+                  ? "rgba(255,255,255,0.18)"
+                  : "transparent",
+              padding: "8px 14px",
+              borderRadius: "14px",
+              boxShadow:
+                activeTab === "home"
+                  ? "0 4px 12px rgba(0,0,0,0.12)"
+                  : "none",
               transition: "0.3s"
             }}>
               <div style={{ fontSize: "24px" }}>📈</div>
@@ -929,7 +1032,22 @@ const healthChartData =
             style={{
               textAlign: "center",
               cursor: "pointer",
-              opacity: activeTab === "plants" ? 1 : 0.6,
+              opacity: activeTab === "plants" ? 1 : 0.55,
+              
+              transform:
+                activeTab === "home"
+                  ? "translateY(-5px)"
+                  : "translateY(0)",
+              background: 
+                activeTab === "home"
+                  ? "rgba(255,255,255,0.18)"
+                  : "transparent",
+              padding: "8px 14px",
+              borderRadius: "14px",
+              boxShadow:
+                activeTab === "home"
+                  ? "0 4px 12px rgba(0,0,0,0.12)"
+                  : "none",
               transition: "0.3s"
             }}>
               <div style={{fontSize:"24px"}}> 🌱 </div>
@@ -946,7 +1064,22 @@ const healthChartData =
             style={{
               textAlign: "center",
               cursor: "pointer",
-              opacity: activeTab === "profile" ? 1 : 0.6,
+              opacity: activeTab === "profile" ? 1 : 0.55,
+              
+              transform:
+                activeTab === "home"
+                  ? "translateY(-5px)"
+                  : "translateY(0)",
+              background: 
+                activeTab === "home"
+                  ? "rgba(255,255,255,0.18)"
+                  : "transparent",
+              padding: "8px 14px",
+              borderRadius: "14px",
+              boxShadow:
+                activeTab === "home"
+                  ? "0 4px 12px rgba(0,0,0,0.12)"
+                  : "none",
               transition: "0.3s"
             }}>
               <div style={{fontSize:"24px"}}> 👤 </div>
@@ -957,9 +1090,8 @@ const healthChartData =
                 Perfil
               </div>
           </div>
+    </div>
 
-        </div>
-    </motion.div>
   </div>
 );
 }

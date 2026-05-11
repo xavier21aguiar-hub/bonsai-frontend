@@ -818,14 +818,14 @@ const healthChartData =
                     <div>
                     <h2 style={{
                       margin: 0,
-                      color: textPrimary
+                      color: "black"
                     }}>
                       {plantIcon} {plant.name}
                     </h2>
 
                     <p style={{
                       margin: "5px 0",
-                      color: textSecondary
+                      color: "#2d3748"
                     }}> {status.health} </p>
 
                     <div style={{
@@ -844,7 +844,7 @@ const healthChartData =
 
                       <p style={{
                         margin: "5px 0 0 0",
-                        color: textPrimary,
+                        color: "black",
                         fontWeight: "500",
                         fontStyle: "italic"
                       }}>
@@ -866,7 +866,7 @@ const healthChartData =
 
                   <p style={{
                     fontWeight: "bold",
-                    color: textPrimary
+                    color: "black"
                   }}>
                     Hace {status.daysSinceWatering} día(s)
                   </p>
@@ -874,7 +874,7 @@ const healthChartData =
                   {/* HISTORIAL */}
                   <h4 style={{
                     marginTop: "20px",
-                    color: textPrimary
+                    color: "black"
                   }}>📅 Historial</h4>
 
                   <ul style={{ listStyle: "none", padding: 0 }}>
@@ -885,7 +885,7 @@ const healthChartData =
                     
                     <li key={i} style={{
                       marginBottom: "8px",
-                      color: textSecondary
+                      color: "black"
                     }}>
                       💧 {new Date(date).toLocaleString()}
                     </li>

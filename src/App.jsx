@@ -206,19 +206,19 @@ if (data?.health?.score < 60) {
 
 let weatherDescription = "Clima agradable ☀️";
 
-if (data?.climate.temperature >= 30) {
+if (data?.climate?.temperature >= 30) {
   weatherDescription = "Mucho calor hoy 🔥";
 }
 
-if (data?.climate.temperature < 20) {
+if (data?.climate?.temperature < 20) {
   weatherDescription = "Temperatura fresca 🌿";
 }
 
-if (data?.climate.temperature < 10) {
+if (data?.climate?.temperature < 10) {
   weatherDescription = "Hace frío ❄️";
 }
 
-if (data?.climate.humidity > 75) {
+if (data?.climate?.humidity > 75) {
   weatherDescription = "Ambiente húmedo 🌧️";
 }
 
@@ -227,19 +227,19 @@ let background = isNight
   : "#f3f4f6";
 
 /* CALOR */
-if (!isNight && data?.climate.temperature > 28) {
+if (!isNight && data?.climate?.temperature > 28) {
   background =
     "linear-gradient(to bottom, #fbc2eb, #fcd34d)";
 }
 
 /* HUMEDAD */
-if (!isNight && data?.climate.humidity > 70) {
+if (!isNight && data?.climate?.humidity > 70) {
   background =
     "linear-gradient(to bottom, #74ebd5, #ACB6E5)";
 }
 
 /* FRÍO */
-if (!isNight && data?.climate.temperature < 10) {
+if (!isNight && data?.climate?.temperature < 10) {
   background =
     "linear-gradient(to bottom, #cfd9df, #e2ebf0)";
 }

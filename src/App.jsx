@@ -44,7 +44,7 @@ useEffect(() =>{
 
 const cardBackground = isNight
   ? "rgba(20,20,30,0.55)"
-  : "rgba(255,255,255,0.45)";
+  : "rgba(255,255,255,0.72)";
 
 const textPrimary = isNight
   ? "#f5f5f5"
@@ -605,7 +605,7 @@ const getPlantMood = (plant) => {
               height: "20px"
             }}>
               <div style={{
-                width: `${(data?.xp || 0 / data?.nextLevelXP || 100) * 100}%`,
+                width: `${((data?.xp || 0) / (data?.nextLevelXP || 100)) * 100}%`,
                 background: "#4CAF50",
                 height: "100%",
                 transition: "1s ease"
@@ -1102,15 +1102,14 @@ const getPlantMood = (plant) => {
                 ? "1px solid rgba(255,255,255,0.05)"
                 : "1px solid rgba(0,0,0,0.04)",
               padding: "20px",
-              borderRadius: "18px"
+              borderRadius: "18px",
+              minHeight: "160px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
             }}>
-              <h3 style={{
-                minHeight: "160px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}>
+              <h3>
                 <span> 🔥 </span>
                 <span> Racha </span> 
               </h3>
@@ -1133,15 +1132,14 @@ const getPlantMood = (plant) => {
                 ? "1px solid rgba(255,255,255,0.05)"
                 : "1px solid rgba(0,0,0,0.04)",
               padding: "20px",
-              borderRadius: "18px"
+              borderRadius: "18px",
+              minHeight: "160px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
             }}>
-              <h3 style={{
-                minHeight: "160px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}> 
+              <h3> 
                 <span> 💧 </span>
                 <span> Riegos </span> 
               </h3>

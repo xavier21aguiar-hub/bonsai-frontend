@@ -288,6 +288,14 @@ const achievements = [
     unlocked: (data?.level || 1) >= 5,
     progress: data?.level || 1,
     goal: 5
+  },
+  {
+    icon: "👑",
+    title: "Leyenda Verde",
+    description: "Mantén una planta perfecta",
+    unlocked: (data?.health?.score || 0) >= 95,
+    progress: data?.health?.score || 0,
+    goal: 95
   }
 ]
 
@@ -1219,23 +1227,36 @@ const getPlantMood = (plant) => {
                       scale: 1.02
                     }}
                     style={{
-                      padding: "16px",
-                      borderRadius: "18px",
-                      background: isNight
-                        ? "rgba(255,255,255,0.08)"
-                        : "rgba(255,255,255,0.9)",
-                      border: isNight
+                      padding: "18px",
+                      borderRadius: "20px",
+                      background: achievement.unlocked
+                      ?(isNight
+                        ? "rgba(255,255,255,0.15)"
+                        : "rgba(255,255,255,0.12)"
+                      ) : (
+                        isNight
+                        ? "rgba(255,255,255,0.05)"
+                        : "rgba(255,255,255,0.7)"
+                      ),
+                      border: achievement.unlocked
+                      ? "1px solid rgba(76,175,80,0.35)"
+                      : (isNight
                         ? "1px solid rgba(255,255,255,0.06)"
-                        : "1px solid rgba(0,0,0,0.04)",
-                      boxShadow: isNight
-                        ? "0 4px 12px rgba(0,0,0,0.2)"
-                        : "0 4px 12px rgba(0,0,0,0.08)",
+                        : "1px solid rgba(0,0,0,0.04)"),
+                      opacity: achievement.unlocked ? 1 : 0.7,
+                      boxShadow: achievement.unlocked
+                        ? "0 0 20px rgba(0,0,0,0.18)"
+                        : "0 4px 12px rgba(0,0,0,0.06)",
                       display: "flex",
                       alignItems: "center",
-                      gap: "15px"
+                      gap: "15px",
+                      transition: "0.4s ease"
                     }}> 
                       <div style={{
-                        fontSize: "30px"
+                        fontSize: "30px",
+                        filter: achievement.unlocked
+                          ? "drop-shadow(0 0 10px rgba(76,175,80,0.55))"
+                          : "grayscale(0.4)"
                       }}>
                         {achievement.icon}
                       </div>
@@ -1252,6 +1273,19 @@ const getPlantMood = (plant) => {
                           fontSize: "14px"
                         }}>
                           {achievement.description}
+                        </p>
+                        <p style={{
+                          margin: "8px 0 0 0",
+                          fontSize: "13px",
+                          color: achievement.unlocked
+                            ? "#4CAF50"
+                            : textSecondary,
+                          fontWeight: "bold"
+                        }}>
+                          {achievement.unlocked
+                            ? "✅ Desbloqueado"
+                            : `🔒 ${achievement.progress}/${achievement.goal}`
+                          }
                         </p>
                       </div>
                     </motion.div>

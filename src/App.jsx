@@ -436,7 +436,7 @@ const getPlantMood = (plant) => {
               margin: 0,
               fontSize: "55px",
               color: textSecondary
-            }}> {Math.round(data.climate.temperature)}° </h2>
+            }}> {Math.round(data?.climate.temperature)}° </h2>
 
             <p style={{
               marginTop: "5px",
@@ -453,7 +453,7 @@ const getPlantMood = (plant) => {
               <div>
                 <p style={{margin: 0, fontSize: "24px"}}> 💧 </p>
                 <p style={{margin: 0}}>
-                  {data.climate.humidity}%
+                  {data?.climate.humidity}%
                 </p>
               </div>
 
@@ -469,7 +469,7 @@ const getPlantMood = (plant) => {
           )}
         
 
-          {data.dailyInsight && (
+          {data?.dailyInsight && (
             <div style={{
               marginTop: "20px",
               marginBottom: "20px",
@@ -494,7 +494,7 @@ const getPlantMood = (plant) => {
                 fontSize: "17px",
                 lineHeight: "1.5"
               }}>
-                {data.dailyInsight}
+                {data?.dailyInsight}
               </p>
               </div>
             )}
@@ -515,7 +515,7 @@ const getPlantMood = (plant) => {
               color: textPrimary,
               marginTop: 0
             }}>
-              🌟 {data.gardenerTitle}
+              🌟 {data?.gardenerTitle}
             </h2>
 
             <p style={{
@@ -523,7 +523,7 @@ const getPlantMood = (plant) => {
               fontSize: "18px",
               marginBottom: "15px"
             }}>
-              Nivel {data.level}
+              Nivel {data?.level || 1}
             </p>
 
             <div style={{
@@ -547,7 +547,7 @@ const getPlantMood = (plant) => {
               marginTop: "10px",
               color: textSecondary
             }}>
-              XP: {data.xp} / {data.nextLevelXP}
+              XP: {data?.xp || 0} / {data?.nextLevelXP}
             </p>
           </div>
           )}
@@ -617,10 +617,10 @@ const getPlantMood = (plant) => {
                 fontSize: "20px",
                 color: healthColor
               }}>
-                {data.health.score}/100
+                {data?.health.score || 0}/100
               </p>
               
-              <p>{data.health.status}</p>
+              <p>{data?.health.status}</p>
             
           </div>
           </>
@@ -778,7 +778,7 @@ const getPlantMood = (plant) => {
               fontSize: "17px",
               lineHeight: "1.5"
             }}>
-              {data.healthPrediction}
+              {data?.healthPrediction}
             </p>
 
             </div>

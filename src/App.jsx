@@ -223,7 +223,46 @@ const calculateStreak = () => {
   }
   return streak;
 };
-const streak = calculateStreak;
+const streak = calculateStreak();
+
+const achievements = [];
+if(streak >= 3){
+  achievements.push({
+    icon: "🔥",
+    title: "Racha activa",
+    description: "3 días seguidos cuidando plantas"
+  });
+}
+
+if(plants.length >= 1){
+  achievements.push({
+    icon: "🪴",
+    title: "Primer jardinero",
+    description: "Registraste tu primera planta"
+  });
+}
+
+const totalWaterings = plants.reduce(
+  (acc, p) =>
+    acc + (p.wateringHistory?.length || 0),
+  0
+);
+
+if (totalWaterings >= 5) {
+  achievements.push({
+    icon: "💧",
+    title: "Cuidador constante",
+    description: "5 riegos realizados"
+  });
+}
+
+if ((data?.health?.score || 0) >= 80) {
+  achievements.push({
+    icon: "🌟",
+    title: "Planta saludable",
+    description: "Tu planta está excelente"
+  });
+}
 
 let healthColor = "#4CAF50";
 
@@ -566,7 +605,7 @@ const getPlantMood = (plant) => {
               height: "20px"
             }}>
               <div style={{
-                width: `${(data.xp / data.nextLevelXP) * 100}%`,
+                width: `${(data?.xp || 0 / data?.nextLevelXP || 100) * 100}%`,
                 background: "#4CAF50",
                 height: "100%",
                 transition: "1s ease"
@@ -988,7 +1027,12 @@ const getPlantMood = (plant) => {
             textAlign: "center"
           }}>
 
-            <img src={avatarUrl} alt="avatar"
+            <motion.img 
+            whileHover={{
+              scale: 1.05
+            }} 
+            src={avatarUrl} 
+            alt="avatar"
               style={{
                 width: "120px",
                 height: "120px",
@@ -1002,7 +1046,7 @@ const getPlantMood = (plant) => {
                 boxShadow: isNight
                   ? "0 12px 30px rgba(0,0,0,0.35)"
                   : "0 8px 18px rgba(0,0,0,0.12)",
-                padding: "10px"
+                padding: "10px",
               }} />
 
             <h2 style={{
@@ -1115,6 +1159,80 @@ const getPlantMood = (plant) => {
               </p>
             </div>
           </div>
+
+          {/* Achievements */}
+            <div style={{
+              marginTop: "30px"
+            }}>
+              <h2 style={{
+                color: textPrimary,
+                marginBottom: "15px"
+              }}>
+                🏆 Logros
+              </h2>
+
+              <div style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "14px"
+              }}>
+                {achievements.map((achievement, i) =>(
+                  <motion.div 
+                    key={i}
+                    initial={{
+                      opacity: 0,
+                      y: 20
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0
+                    }}
+                    transition={{
+                      delay: i * 0.15
+                    }}
+                    whileHover={{
+                      scale: 1.02
+                    }}
+                    style={{
+                      padding: "16px",
+                      borderRadius: "18px",
+                      background: isNight
+                        ? "rgba(255,255,255,0.08)"
+                        : "rgba(255,255,255,0.9)",
+                      border: isNight
+                        ? "1px solid rgba(255,255,255,0.06)"
+                        : "1px solid rgba(0,0,0,0.04)",
+                      boxShadow: isNight
+                        ? "0 4px 12px rgba(0,0,0,0.2)"
+                        : "0 4px 12px rgba(0,0,0,0.08)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "15px"
+                    }}> 
+                      <div style={{
+                        fontSize: "30px"
+                      }}>
+                        {achievement.icon}
+                      </div>
+                      <div>
+                        <h3 style={{
+                          margin: 0,
+                          color: textPrimary
+                        }}>
+                          {achievement.title}
+                        </h3>
+                        <p style={{
+                          margin: "5px 0 0 0",
+                          color: textSecondary,
+                          fontSize: "14px"
+                        }}>
+                          {achievement.description}
+                        </p>
+                      </div>
+                    </motion.div>
+                ))}
+              </div>
+            </div>
         </div>
     )}
     </motion.div>

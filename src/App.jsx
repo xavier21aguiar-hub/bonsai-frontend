@@ -194,6 +194,37 @@ const quickWater = () => {
   waterPlant(plants[0]._id);
 };
 
+const calculateStreak = () => {
+  if(plants.length === 0) return 0;
+
+  let streak = 0;
+  const today = new Date();
+
+  const wateringDates = plants
+    .flatMap(plant => plant.wateringHistory || [])
+    .map(date => {
+      const d = new Date(date);
+      return d.toDateString();
+    });
+
+  const uniqueDates = [...new Set(wateringDates)];
+
+  for(let i=0; i<30; i++) {
+    const checkDate = new Date();
+    checkDate.setDate(today.getDate() - i);
+
+    const formatted = checkDate.toDateString();
+
+    if(uniqueDates.includes(formatted)){
+      streak++;
+    } else {
+      break;
+    }
+  }
+  return streak;
+};
+const streak = calculateStreak;
+
 let healthColor = "#4CAF50";
 
 if (data?.health?.score < 80) {
@@ -398,7 +429,7 @@ const getPlantMood = (plant) => {
           color: textPrimary,
           marginTop: "-10px",
           marginBottom: "20px"
-        }}> 🌿 Bienvenido de nuevo — {city} </p>
+        }}> 🌿 Bienvenido de nuevo — {username} </p>
       )}
 
       {activeTab === "home" && (
@@ -976,7 +1007,7 @@ const getPlantMood = (plant) => {
             <p style={{
               color: textSecondary,
               marginTop: 0
-            }}> 🌱 {data?.gardenerTitle || "Jardinero"} 
+            }}> {data?.gardenerTitle || "Jardinero"} 
             </p>
           </div>
 
@@ -1019,15 +1050,21 @@ const getPlantMood = (plant) => {
             }}>
               <h3 style={{
                 margin: 0,
-                color: textPrimary
-              }}> 🔥 Racha
+                color: textPrimary,
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                justifyContent: "center"
+              }}>
+                <span> 🔥 </span>
+                <span> Racha </span> 
               </h3>
 
               <p style={{
                 fontSize: "24px",
                 margin: "10px 0 0 0",
                 color: textSecondary
-              }}> 5 días
+              }}> {streak} día(s)
               </p>
             </div>
 
@@ -1040,8 +1077,14 @@ const getPlantMood = (plant) => {
             }}>
               <h3 style={{
                 margin: 0,
-                color: textPrimary
-              }}> 💧 Riegos
+                color: textPrimary,
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                justifyContent: "center"
+              }}> 
+                <span> 💧 </span>
+                <span> Riegos </span> 
               </h3>
 
               <p style={{

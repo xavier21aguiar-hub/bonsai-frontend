@@ -7,7 +7,7 @@ import {LineChart,
   ResponsiveContainer,
   CartesianGrid
 } from "recharts";
-import { motion, progress } from "framer-motion";
+import { motion } from "framer-motion";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -225,23 +225,6 @@ const calculateStreak = () => {
 };
 const streak = calculateStreak();
 
-const achievements = [];
-if(streak >= 3){
-  achievements.push({
-    icon: "🔥",
-    title: "Racha activa",
-    description: "3 días seguidos cuidando plantas"
-  });
-}
-
-if(plants.length >= 1){
-  achievements.push({
-    icon: "🪴",
-    title: "Primer jardinero",
-    description: "Registraste tu primera planta"
-  });
-}
-
 const totalWaterings = plants.reduce(
   (acc, p) =>
     acc + (p.wateringHistory?.length || 0),
@@ -259,7 +242,7 @@ const achievements = [
   },
   {
     icon: "🔥",
-    title: "Racha activada",
+    title: "Racha activa",
     description: "Mantén 3 días seguidos",
     unlocked: streak >= 3,
     progress: streak,
@@ -652,7 +635,7 @@ const getPlantMood = (plant) => {
               marginTop: "10px",
               color: textSecondary
             }}>
-              XP: {data?.xp || 0} / {data?.nextLevelXP}
+              XP: {data?.xp || 0} / {data?.nextLevelXP || 100}
             </p>
           </div>
           )}
@@ -1232,7 +1215,7 @@ const getPlantMood = (plant) => {
                       background: achievement.unlocked
                       ?(isNight
                         ? "rgba(255,255,255,0.15)"
-                        : "rgba(255,255,255,0.12)"
+                        : "rgba(76,175,80,0.12)"
                       ) : (
                         isNight
                         ? "rgba(255,255,255,0.05)"
@@ -1245,7 +1228,7 @@ const getPlantMood = (plant) => {
                         : "1px solid rgba(0,0,0,0.04)"),
                       opacity: achievement.unlocked ? 1 : 0.7,
                       boxShadow: achievement.unlocked
-                        ? "0 0 20px rgba(0,0,0,0.18)"
+                        ? "0 0 20px rgba(76,175,80,0.18)"
                         : "0 4px 12px rgba(0,0,0,0.06)",
                       display: "flex",
                       alignItems: "center",
@@ -1258,7 +1241,10 @@ const getPlantMood = (plant) => {
                           ? "drop-shadow(0 0 10px rgba(76,175,80,0.55))"
                           : "grayscale(0.4)"
                       }}>
-                        {achievement.icon}
+                        {achievement.unlocked
+                          ? achievement.icon
+                          : "🔒"
+                        }
                       </div>
                       <div>
                         <h3 style={{

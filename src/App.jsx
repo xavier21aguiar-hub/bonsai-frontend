@@ -23,7 +23,7 @@ function App() {
   );
   const avatarUrl =  `https://api.dicebear.com/7.x/adventurer/svg?seed=${username}`;
 
-{/* Dark Mode */}
+// Dark Mode 
 const [isNight, setIsNight] = useState(
   window.matchMedia("(prefers-color-scheme: dark)").matches
 );
@@ -939,9 +939,8 @@ const getPlantMood = (plant) => {
           )}
           </>
         )}
-    </motion.div>
 
-    {activeTab === "profile" && (
+      {activeTab === "profile" && (
       <>
         <div style={{
           marginTop: "25px",
@@ -1013,7 +1012,9 @@ const getPlantMood = (plant) => {
             gap: "15px"
           }}>
             <div style={{
-              background: "rgba(255,255,255,0.08)",
+              background: isNight
+                ? "rgba(255,255,255,0.08)"
+                : "rgba(255,255,255,0.08)",
               padding: "20px",
               borderRadius: "18px"
             }}>
@@ -1032,7 +1033,9 @@ const getPlantMood = (plant) => {
             </div>
 
             <div style={{
-              background: "rgba(255,255,255,0.08)",
+              background: isNight
+                ? "rgba(255,255,255,0.08)"
+                : "rgba(255,255,255,0.08)",
               padding: "20px",
               borderRadius: "18px"
             }}>
@@ -1058,6 +1061,7 @@ const getPlantMood = (plant) => {
         </div>
       </>
     )}
+    </motion.div>
 
     <motion.button onClick={quickWater}
       

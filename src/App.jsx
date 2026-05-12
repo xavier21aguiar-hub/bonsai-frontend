@@ -993,8 +993,15 @@ const getPlantMood = (plant) => {
                 width: "120px",
                 height: "120px",
                 borderRadius: "50%",
-                border: "4px solid rgba(255,255,255,0.25)",
-                background: "white",
+                border: isNight
+                  ? "4px solid rgba(255,255,255,0.18)"
+                  : "4px solid rgba(0,0,0,0.08)",
+                background: isNight
+                  ? "#1f2937"
+                  : "white",
+                boxShadow: isNight
+                  ? "0 12px 30px rgba(0,0,0,0.35)"
+                  : "0 8px 18px rgba(0,0,0,0.12)",
                 padding: "10px"
               }} />
 
@@ -1023,7 +1030,9 @@ const getPlantMood = (plant) => {
             }} 
             value={username}
             style={{
-              width: "100%",
+              width: "92%",
+              margin: "20px auto 0 auto",
+              display: "block",
               marginTop: "20px",
               padding: "14px",
               borderRadius: "14px",
@@ -1044,17 +1053,19 @@ const getPlantMood = (plant) => {
             <div style={{
               background: isNight
                 ? "rgba(255,255,255,0.08)"
-                : "rgba(255,255,255,0.45)",
+                : "rgba(255,255,255,0.92)",
+              border: isNight
+                ? "1px solid rgba(255,255,255,0.05)"
+                : "1px solid rgba(0,0,0,0.04)",
               padding: "20px",
               borderRadius: "18px"
             }}>
               <h3 style={{
-                margin: 0,
-                color: textPrimary,
+                minHeight: "160px",
                 display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
                 alignItems: "center",
-                gap: "8px",
-                justifyContent: "center"
               }}>
                 <span> 🔥 </span>
                 <span> Racha </span> 
@@ -1064,24 +1075,28 @@ const getPlantMood = (plant) => {
                 fontSize: "24px",
                 margin: "10px 0 0 0",
                 color: textSecondary
-              }}> {streak} día(s)
+              }}> {streak > 0
+                    ? `${streak} día${streak > 1 ? "s" : ""}`
+                    : "Sin racha"}
               </p>
             </div>
 
             <div style={{
               background: isNight
                 ? "rgba(255,255,255,0.08)"
-                : "rgba(255,255,255,0.45)",
+                : "rgba(255,255,255,0.92)",
+              border: isNight
+                ? "1px solid rgba(255,255,255,0.05)"
+                : "1px solid rgba(0,0,0,0.04)",
               padding: "20px",
               borderRadius: "18px"
             }}>
               <h3 style={{
-                margin: 0,
-                color: textPrimary,
+                minHeight: "160px",
                 display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
                 alignItems: "center",
-                gap: "8px",
-                justifyContent: "center"
               }}> 
                 <span> 💧 </span>
                 <span> Riegos </span> 

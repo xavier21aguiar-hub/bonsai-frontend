@@ -7,7 +7,7 @@ import {LineChart,
   ResponsiveContainer,
   CartesianGrid
 } from "recharts";
-import { motion } from "framer-motion";
+import { motion, progress } from "framer-motion";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -248,21 +248,48 @@ const totalWaterings = plants.reduce(
   0
 );
 
-if (totalWaterings >= 5) {
-  achievements.push({
+const achievements = [
+  {
+    icon: "🪴",
+    title: "Primer jardinero",
+    description: "Registra tu primera planta",
+    unlocked: plants.length >= 1,
+    progress: plants.length,
+    goal: 1
+  },
+  {
+    icon: "🔥",
+    title: "Racha activada",
+    description: "Mantén 3 días seguidos",
+    unlocked: streak >= 3,
+    progress: streak,
+    goal: 3
+  },
+  {
     icon: "💧",
     title: "Cuidador constante",
-    description: "5 riegos realizados"
-  });
-}
-
-if ((data?.health?.score || 0) >= 80) {
-  achievements.push({
+    description: "Realiza 5 riegos",
+    unlocked: totalWaterings >= 5,
+    progress: totalWaterings,
+    goal: 5
+  },
+  {
     icon: "🌟",
     title: "Planta saludable",
-    description: "Tu planta está excelente"
-  });
-}
+    description: "Alcanza 80 de salud",
+    unlocked: (data?.health?.score || 0) >= 80,
+    progress: data?.health?.score || 0,
+    goal: 80
+  },
+  {
+    icon: "🏆",
+    title: "Maestro Bonsai",
+    description: "Llega a nivel 5",
+    unlocked: (data?.level || 1) >= 5,
+    progress: data?.level || 1,
+    goal: 5
+  }
+]
 
 let healthColor = "#4CAF50";
 

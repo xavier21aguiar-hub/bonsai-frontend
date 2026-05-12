@@ -18,12 +18,29 @@ function App() {
   const [error, setError] = useState(null);
   const [plants, setPlants] = useState([]);
   const [activeTab, setActiveTab] = useState("home");
+  const  [username, setUsername] = useState(
+    localStorage.getItem("bonsaiUser") || "Jardinero"
+  );
+  const avatarUrl =  `https://api.dicebear.com/7.x/adventurer/svg?seed=${username}`;
 
-  const prefersDarkMode =
-  window.matchMedia &&
-  window.matchMedia("(prefers-color-scheme: dark)").matches;
+{/* Dark Mode */}
+const [isNight, setIsNight] = useState(
+  window.matchMedia("(prefers-color-scheme: dark)").matches
+);
 
-const [isNight, setIsNight] = useState(prefersDarkMode);
+useEffect(() =>{
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+  const handleThemeChange = (e) => {
+    setIsNight(e.matches);
+  };
+
+  mediaQuery.addEventListener( "change", handleThemeChange);
+
+  return () => {
+    mediaQuery.removeEventListener("change", handleThemeChange);
+  };
+}, []);
 
 const cardBackground = isNight
   ? "rgba(20,20,30,0.55)"
@@ -41,15 +58,12 @@ const inputBackground = isNight
   ? "rgba(255,255,255,0.1)"
   : "rgba(255,255,255,0.7)";
 
+
 const healthChartData =
   plants[0]?.healthHistory?.map(entry => ({
     date: new Date(entry.date).toLocaleDateString(),
     health: entry.value
   })) || [];
-
-  const toggleTheme = () => {
-    setIsNight(!isNight);
-  };
 
   const fetchData = async () => {
   if(!city.trim()){
@@ -331,23 +345,6 @@ const getPlantMood = (plant) => {
         Bonsai Care 🌱
       </h1>
 
-      <button onClick={toggleTheme} style={{
-        marginBottom: "20px",
-        padding: "10px 15px",
-        borderRadius: "12px",
-        border: "none",
-        background: isNight
-          ? "#f5f5f5"
-          : "#2d3748",
-        color: isNight
-          ? "#2d3748"
-          : "white",
-        cursor: "pointer",
-        fontWeight: "bold"
-      }}>
-        {isNight ? "☀️ Light" : "🌙 Dark"}
-      </button>
-
       <input
         type="text"
         placeholder="Escribe una ciudad"
@@ -404,10 +401,12 @@ const getPlantMood = (plant) => {
         }}> 🌿 Bienvenido de nuevo — {city} </p>
       )}
 
-      {data && activeTab === "home" && (
+      {activeTab === "home" && (
         <div style={{ marginTop: "20px" }}>
           
           {/* Clima */}
+          {data?.climate &&(
+          <>
           <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -466,6 +465,9 @@ const getPlantMood = (plant) => {
               </div>
             </div>
           </motion.div>
+          </>
+          )}
+        
 
           {data.dailyInsight && (
             <div style={{
@@ -497,6 +499,7 @@ const getPlantMood = (plant) => {
               </div>
             )}
 
+          {data?.gardenerTitle && (
           <div style={{
             marginTop: "20px",
             marginBottom: "20px",
@@ -547,8 +550,11 @@ const getPlantMood = (plant) => {
               XP: {data.xp} / {data.nextLevelXP}
             </p>
           </div>
+          )}
 
           {/* RECOMENDACIONES */}
+          {data?.recommendations && (
+          <>
           <h2 style={{ marginTop: "20px",
             color: textPrimary
           }}>🌱 Recomendaciones</h2>
@@ -559,9 +565,9 @@ const getPlantMood = (plant) => {
                 ? "rgba(255,255,255,0.08)"
                 : "#e8f5e9";
               
-              if (rec.action === "REGAR") color = "#d0f0c0";
-              if (rec.action === "SACAR") color = "#fff3cd";
-              if (rec.action === "PROTEGER") color = "#f8d7da";
+              if (!isNight && rec.action === "REGAR") color = "#d0f0c0";
+              if (!isNight && rec.action === "SACAR") color = "#fff3cd";
+              if (!isNight && rec.action === "PROTEGER") color = "#f8d7da";
               
               return (
               <li key={i} style={{
@@ -576,7 +582,12 @@ const getPlantMood = (plant) => {
               );
             })}
           </ul>
+          </>
+          )}
 
+          {/* Health */}
+          {data?.health && (
+          <>
           <h2 style={{ color: textPrimary }}>🧠 Salud de la planta</h2>
           
           <div style={{ marginTop: "15px" }}>
@@ -612,8 +623,12 @@ const getPlantMood = (plant) => {
               <p>{data.health.status}</p>
             
           </div>
+          </>
+          )}
           
           {/* TIMELINE */}
+          {data?.timeDecisions && (
+          <>
           <h3 style={{ color: textPrimary}}>🕒 Plan del día</h3>
           
           <div style={{
@@ -630,17 +645,23 @@ const getPlantMood = (plant) => {
 
               if (rec.time === "mañana") {
                 icon = "🌅";
-                bg = "rgba(255, 243, 205, 0.7)";
+                bg = isNight
+                  ? "rgba(255,255,255,0.08)"
+                  : "rgba(255, 243, 205, 0.7)";
               }
 
               if (rec.time === "tarde") {
                 icon = "☀️";
-                bg = "rgba(255, 236, 179, 0.7)";
+                bg = isNight
+                  ? "rgba(255,255,255,0.08)"
+                  : "rgba(255, 243, 205, 0.7)";
               }
 
               if (rec.time === "noche") {
                 icon = "🌙";
-                bg = "rgba(187, 222, 251, 0.7)";
+                bg = isNight
+                  ? "rgba(255,255,255,0.08)"
+                  : "rgba(255, 243, 205, 0.7)";
               }
 
               return (
@@ -682,6 +703,8 @@ const getPlantMood = (plant) => {
               );
             })}
           </div>
+          </>
+          )}
 
         </div>
       )}
@@ -763,7 +786,7 @@ const getPlantMood = (plant) => {
           </>
         )}
           
-          {activeTab === "plants" && (
+        {activeTab === "plants" && (
           <>
           <h3 style={{marginTop: "25px",
             color: textPrimary
@@ -802,7 +825,9 @@ const getPlantMood = (plant) => {
                     delay: i * 0.1
                   }}
                   style={{
-                  background: status.color,
+                  background: isNight
+                    ? "rgba(255,255,255,0.08)"
+                    : status.color,
                   padding: "10px",
                   margin: "10px 0",
                   borderRadius: "20px",
@@ -915,6 +940,124 @@ const getPlantMood = (plant) => {
           </>
         )}
     </motion.div>
+
+    {activeTab === "profile" && (
+      <>
+        <div style={{
+          marginTop: "25px",
+          padding: "25px",
+          borderRadius: "25px",
+          background: cardBackground,
+          backdropFilter: "blur(12px)",
+          boxShadow: isNight
+            ? "0 8px 25px rgba(0,0,0,0.35)"
+            : "0 8px 20px rgba(0,0,0,0.08)"
+        }}>
+
+          {/* Avatar */}
+          <div style={{
+            textAlign: "center"
+          }}>
+
+            <img src={avatarUrl} alt="avatar"
+              style={{
+                width: "120px",
+                height: "120px",
+                borderRadius: "50%",
+                border: "4px solid rgba(255,255,255,0.25)",
+                background: "white",
+                padding: "10px"
+              }} />
+
+            <h2 style={{
+              color: textPrimary,
+              marginBottom: "5px"
+            }}> {username}
+            </h2>
+
+            <p style={{
+              color: textSecondary,
+              marginTop: 0
+            }}> 🌱 {data?.gardenerTitle || "Jardinero"} 
+            </p>
+          </div>
+
+          {/* Input Nombre */}
+          <input type="text"
+            placeholder="Cambiar nombre"
+            onChange={(e) => {
+              setUsername(e.target.value);
+              localStorage.setItem(
+                "bonsaiUser",
+                e.target.value
+              );
+            }} 
+            value={username}
+            style={{
+              width: "100%",
+              marginTop: "20px",
+              padding: "14px",
+              borderRadius: "14px",
+              border: "none",
+              background: inputBackground,
+              color: textPrimary,
+              fontSize: "16px"
+            }}
+          />
+
+          {/* Stats */}
+          <div style={{
+            marginTop: "25px",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "15px"
+          }}>
+            <div style={{
+              background: "rgba(255,255,255,0.08)",
+              padding: "20px",
+              borderRadius: "18px"
+            }}>
+              <h3 style={{
+                margin: 0,
+                color: textPrimary
+              }}> 🔥 Racha
+              </h3>
+
+              <p style={{
+                fontSize: "24px",
+                margin: "10px 0 0 0",
+                color: textSecondary
+              }}> 5 días
+              </p>
+            </div>
+
+            <div style={{
+              background: "rgba(255,255,255,0.08)",
+              padding: "20px",
+              borderRadius: "18px"
+            }}>
+              <h3 style={{
+                margin: 0,
+                color: textPrimary
+              }}> 💧 Riegos
+              </h3>
+
+              <p style={{
+                fontSize: "24px",
+                margin: "10px 0 0 0",
+                color: textSecondary
+              }}>
+                {plants.reduce(
+                  (acc, p) => 
+                    acc + (p.wateringHistory?.length || 0),
+                    0
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
+      </>
+    )}
 
     <motion.button onClick={quickWater}
       

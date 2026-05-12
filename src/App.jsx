@@ -941,7 +941,6 @@ const getPlantMood = (plant) => {
         )}
 
       {activeTab === "profile" && (
-      <>
         <div style={{
           marginTop: "25px",
           padding: "25px",
@@ -1014,7 +1013,7 @@ const getPlantMood = (plant) => {
             <div style={{
               background: isNight
                 ? "rgba(255,255,255,0.08)"
-                : "rgba(255,255,255,0.08)",
+                : "rgba(255,255,255,0.45)",
               padding: "20px",
               borderRadius: "18px"
             }}>
@@ -1035,7 +1034,7 @@ const getPlantMood = (plant) => {
             <div style={{
               background: isNight
                 ? "rgba(255,255,255,0.08)"
-                : "rgba(255,255,255,0.08)",
+                : "rgba(255,255,255,0.45)",
               padding: "20px",
               borderRadius: "18px"
             }}>
@@ -1059,7 +1058,6 @@ const getPlantMood = (plant) => {
             </div>
           </div>
         </div>
-      </>
     )}
     </motion.div>
 

@@ -7,7 +7,7 @@ import {LineChart,
   ResponsiveContainer,
   CartesianGrid
 } from "recharts";
-import { motion } from "framer-motion";
+import { color, motion } from "framer-motion";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -22,6 +22,60 @@ function App() {
     localStorage.getItem("bonsaiUser") || "Jardinero"
   );
   const avatarUrl =  `https://api.dicebear.com/7.x/adventurer/svg?seed=${username}`;
+
+  const speciesConfig = {
+    
+    juniper: {
+      icon: "🌲",
+      image: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=400",
+      color: "#4CAF50",
+      waterEvery: 3,
+      heatTolerance: 35,
+      coldTolerance: 5,
+      difficulty: "Fácil",
+      personality: "Calmado y resistente",
+    },
+    sakura: {
+      icon: "🌸",
+      image: "https://images.unsplash.com/photo-1527061011665-3652c757a4d4?q=80&w=400",
+      color: "#F48FB1",
+      waterEvery: 1,
+      heatTolerance: 28,
+      coldTolerance: 10,
+      difficulty: "Difícil",
+      personality: "Elegante y delicado"
+    },
+    maple: {
+      icon: "🍁",
+      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=400",
+      color: "#FF7043",
+      waterEvery: 2,
+      heatTolerance: 30,
+      coldTolerance: 8,
+      difficulty: "Media", 
+      personality: "Energético y brillante"
+    },
+    pine: {
+      icon: "🌿",
+      image: "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=400",
+      color: "#66BB6A",
+      waterEvery: 4,
+      heatTolerance: 32,
+      coldTolerance: -5,
+      difficulty: "Fácil",
+      personality: "Fuerte y paciente"
+    },
+    ficus: {
+      icon: "🪴",
+      image: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=400",
+      color: "#81C784",
+      waterEvery: 2,
+      heatTolerance: 38,
+      coldTolerance: 15,
+      difficulty: "Media",
+      personality: "Tropical y amigable"
+    }
+  };
 
 // Dark Mode 
 const [isNight, setIsNight] = useState(
@@ -358,41 +412,43 @@ const getPlantStatus = (plant) => {
 
 const getPlantMood = (plant) => {
 
-  const daysSinceWatering =
-    (Date.now() - new Date(plant.lastWatered)) /
-    (1000 * 60 * 60 * 24);
+  switch(plant.state){
+    case "growing":
+      return {
+        moodEmoji: "🌱",
+        moodMessage: "Estoy creciendo muy bien ✨"
+      };
 
-  let moodEmoji = "😊";
-  let moodMessage = "Me siento muy bien hoy ☀️";
+    case "thirsty":
+      return {
+        moodEmoji: "🥀",
+        moodMessage: "Necesito agua pronto..."
+      };
+    
+    case "overwatered":
+      return {
+        moodEmoji: "💧",
+        moodMessage:  "Demasiada agua 😵"
+      };
 
-  // SALUD BAJA
-  if (plant.health < 40) {
-    moodEmoji = "🥀";
-    moodMessage = "Necesito ayuda pronto...";
+    case "resting":
+      return {
+        moodEmoji:  "😴",
+        moodMessage:  "Estoy descansando tranquilamente"
+      };
+
+    case "overwatered":
+      return {
+        moodEmoji: "🌟",
+        moodMessage:  "Me siento perfecta hoy"
+      };
+
+    default:
+      return{
+        moodEmoji: "😊",
+        moodMessage: "Todo va bien 🌿"
+      };
   }
-
-  // MUY SECA
-  if (daysSinceWatering > 4) {
-    moodEmoji = "💧";
-    moodMessage = "Tengo mucha sed 🌱";
-  }
-
-  // SOBRE-RIEGO
-  if (daysSinceWatering < 1) {
-    moodEmoji = "😵";
-    moodMessage = "Creo que tengo demasiada agua...";
-  }
-
-  // SALUD EXCELENTE
-  if (plant.health > 85) {
-    moodEmoji = "🌟";
-    moodMessage = "Estoy creciendo increíblemente bien";
-  }
-
-  return {
-    moodEmoji,
-    moodMessage
-  };
 };
 
   return (
@@ -889,15 +945,26 @@ const getPlantMood = (plant) => {
 
               const mood = getPlantMood(plant);
 
-              let plantIcon = "🌱";
+              let stateGlow = "0 8px 20px rgba(0,0,0,0.08)";
 
-              if(plant.species === "cactus") {
-                plantIcon = "🌵";
+              /* Perfecta */
+              if(plant.state === "perfect") {
+                stateGlow = "0 0 25px rgba(76,175,80,0.35)";
+              }
+              /* Sobre-riego */
+              if(plant.state === "overwatered") {
+                stateGlow = "0 0 20px rgba(33,150,243,0.25)";
+              }
+              /* Sedienta */
+              if(plant.state === "thirsty") {
+                stateGlow =  "0 0 20px rgba(255,152,0,0.25)";
               }
 
-              if(plant.species === "bonsai"){
-                plantIcon = "🪴";
-              }
+              const species = 
+                speciesConfig[plant.species] || 
+                speciesConfig.juniper;
+
+              const plantIcon = species.icon;
 
               return(
                 <motion.div
@@ -914,15 +981,36 @@ const getPlantMood = (plant) => {
                   }}
                   style={{
                   background: isNight
-                    ? "rgba(255,255,255,0.08)"
+                    ? (plant.state === "perfect"
+                        ? "rgba(76,175,80,0.12)"
+                        : plant.state === "overwatered"
+                          ? "rgba(33,150,243,0.12)"
+                          : plant.state === "thirsty"
+                            ? "rgba(255,152,0,0.12)"
+                            : "rgba(255,255,255,0.08)"
+                      )
                     : status.color,
                   padding: "10px",
                   margin: "10px 0",
                   borderRadius: "20px",
-                  boxShadow: "0 8px 20px rgba(0,0,0,0.08)",
-                  transition: "0.3 ease",
+                  boxShadow: stateGlow,
+                  transition: "0.3s ease",
                   textAlign: "left"
                   }}>
+
+                  <img
+                      src={species.image}
+                      alt={plant.name}
+                      
+                      style={{
+                        width: "100%",
+                        height: "180px",
+                        objectFit: "cover",
+                        borderRadius: "18px",
+                        marginBottom: "15px",
+                        boxShadow:
+                          "0 8px 18px rgba(0,0,0,0.12)"
+                  }}/>
 
                   <div style={{
                     display: "flex",
@@ -939,6 +1027,62 @@ const getPlantMood = (plant) => {
                     </h2>
 
                     <p style={{
+                      margin: "4px 0 10px 0",
+                      color: textSecondary,
+                      fontSize: "14px",
+                      fontStyle: "italic"
+                    }}>
+                      {species.personality}
+                    </p>
+
+                    <div style={{
+                      marginTop: "10px",
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "8px"
+                    }}>
+                      <span style={{
+                        background: "rgba(76,175,80,0.15)",
+                        padding: "6px 10px",
+                        borderRadius: "12px",
+                        fontSize: "12px",
+                        color: textPrimary
+                      }}>
+                        💧 Cada {species.waterEvery} día(s)
+                      </span>
+
+                      <span style={{
+                        background: "rgba(76,175,80,0.15)",
+                        padding: "6px 10px",
+                        borderRadius: "12px",
+                        fontSize: "12px",
+                        color: textPrimary
+                      }}>
+                        ☀️ {species.heatTolerance}° max
+                      </span>
+
+                      <span style={{
+                        background: "rgba(76,175,80,0.15)",
+                        padding: "6px 10px",
+                        borderRadius: "12px",
+                        fontSize: "12px",
+                        color: textPrimary
+                      }}>
+                        ❄️ {species.coldTolerance}° min
+                      </span>
+
+                      <span style={{
+                        background: "rgba(76,175,80,0.15)",
+                        padding: "6px 10px",
+                        borderRadius: "12px",
+                        fontSize: "12px",
+                        color: textPrimary
+                      }}>
+                        🌱 {species.difficulty}
+                      </span>
+                    </div>
+
+                    <p style={{
                       margin: "5px 0",
                       color: textSecondary
                     }}> {status.health} </p>
@@ -947,7 +1091,9 @@ const getPlantMood = (plant) => {
                       marginTop: "10px",
                       padding: "12px",
                       borderRadius: "14px",
-                      background: "rgba(255,255,255,0.35)",
+                      background: isNight
+                        ? "rgba(255,255,255,0.08)"
+                        : "rgba(255,255,255,0.35)",
                       backdropFilter: "blur(8px)"
                     }}>
                       <p style={{

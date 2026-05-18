@@ -9,6 +9,7 @@ import {LineChart,
 } from "recharts";
 import { motion } from "framer-motion";
 import { Home, LineChart as ChartIcon, Leaf, User, MapPin, Droplet, Sun, CloudRain, Snowflake, Thermometer, Wind, AlertCircle, Plus, LogOut } from "lucide-react";
+import BonsaiAvatar from "./BonsaiAvatar";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -29,6 +30,7 @@ function App() {
   const [showAddPlant, setShowAddPlant] = useState(false);
   const [newPlantName, setNewPlantName] = useState("");
   const [newPlantSpecies, setNewPlantSpecies] = useState("juniper");
+  const [isWatering, setIsWatering] = useState(false);
   
   const [username, setUsername] = useState(
     currentUser?.username || "Jardinero"
@@ -258,6 +260,7 @@ useEffect(() => {
 }, [currentUser]);
 
 const waterPlant = async (id) => {
+  setIsWatering(true);
   try {
     await fetch(`${API_URL}/api/bonsai/water`, {
       method: "POST",
@@ -267,12 +270,13 @@ const waterPlant = async (id) => {
       body: JSON.stringify({ id })
     });
 
-    alert("💧 Riego registrado");
     loadPlants();
+    setTimeout(() => setIsWatering(false), 2000);
 
   } catch (error) {
     console.error(error);
     alert("❌ Error al registrar riego");
+    setIsWatering(false);
   }
 };
 
@@ -326,6 +330,7 @@ const quickWater = () => {
     return;
   }
 
+  setIsWatering(true);
   plantsToWater.forEach(id => waterPlant(id));
 };
 
@@ -730,9 +735,21 @@ const getPlantMood = (plant) => {
             : "0 8px 20px rgba(0,0,0,0.08)",
             }}>
             <div style={{
-              fontSize: "55px",
+              display: "flex",
+              justifyContent: "center",
               marginBottom: "10px"
-            }}> ☀️ </div>
+            }}>
+              {plants.length > 0 ? (
+                <BonsaiAvatar
+                  plantStatus={plants.length > 0 ? getPlantStatus(plants[0]) : "perfect"}
+                  temperature={data?.climate.temperature || 20}
+                  isWatering={isWatering}
+                  size={150}
+                />
+              ) : (
+                <div style={{ fontSize: "55px" }}> ☀️ </div>
+              )}
+            </div>
 
             <h2 style={{
               margin: 0,
@@ -1179,12 +1196,9 @@ const getPlantMood = (plant) => {
                 speciesConfig[plant.species] || 
                 speciesConfig.juniper;
 
-              const plantIcon = species.icon;
-
               return(
                 <motion.div
                   key={plant._id}
-                  initial={{ opacity: 0, y: 25 }}
                   animate={{ opacity: 1, y: 0 }}
                   whileHover={{
                     scale: 1.02,
@@ -1213,19 +1227,19 @@ const getPlantMood = (plant) => {
                   textAlign: "left"
                   }}>
 
-                  <img
-                      src={species.image}
-                      alt={plant.name}
-                      
-                      style={{
-                        width: "100%",
-                        height: "180px",
-                        objectFit: "cover",
-                        borderRadius: "18px",
-                        marginBottom: "15px",
-                        boxShadow:
-                          "0 8px 18px rgba(0,0,0,0.12)"
-                  }}/>
+                  <div style={{
+                    width: "100%",
+                    height: "180px",
+                    background: "rgba(255,255,255,0.05)",
+                    borderRadius: "18px",
+                    marginBottom: "15px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow: "inset 0 4px 10px rgba(0,0,0,0.05)"
+                  }}>
+                    <BonsaiAvatar plantStatus={plant.state} temperature={20} size={150} />
+                  </div>
 
                   <div style={{
                     display: "flex",

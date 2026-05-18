@@ -7,7 +7,8 @@ import {LineChart,
   ResponsiveContainer,
   CartesianGrid
 } from "recharts";
-import { color, motion } from "framer-motion";
+import { motion } from "framer-motion";
+import { Home, LineChart as ChartIcon, Leaf, User, MapPin, Droplet, Sun, CloudRain, Snowflake, Thermometer, Wind, AlertCircle, Plus, LogOut } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -164,9 +165,11 @@ const healthChartData =
 
 const getLocation = () => {
   if (!navigator.geolocation) {
-    alert("Geolocalización no soportada");
+    alert("Tu navegador no soporta geolocalización");
     return;
   }
+
+  setLoading(true);
 
   navigator.geolocation.getCurrentPosition(
     async (position) => {
@@ -174,8 +177,6 @@ const getLocation = () => {
       const lon = position.coords.longitude;
 
       try {
-        setLoading(true);
-
         const response = await fetch(
           `${API_URL}/api/bonsai/care?lat=${lat}&lon=${lon}${currentUser ? `&userId=${currentUser._id}` : ""}`
         );
@@ -184,16 +185,21 @@ const getLocation = () => {
         setData(result);
         localStorage.setItem("savedLat", lat);
         localStorage.setItem("savedLon", lon);
-
+        setLoading(false);
       } catch (error) {
-        setError("Error obteniendo ubicación");
-      } finally {
+        setError("Error obteniendo los datos del clima");
         setLoading(false);
       }
     },
     (error) => {
-    console.error("ERROR GEO:", error);
-    alert(error.message);
+      console.error("ERROR GEO:", error);
+      alert("No pudimos obtener tu ubicación. Verifica tus permisos o intenta escribir una ciudad.");
+      setLoading(false);
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
     }
   );
 };
@@ -614,11 +620,16 @@ const getPlantMood = (plant) => {
       }}>
       
       <h1 style={{ marginBottom: "20px",
-        fontSize: "60px",
+        fontSize: "clamp(32px, 8vw, 55px)",
         color: "white",
-        textShadow: "0 4px 15px rgba(0,0,0,0.3)"
+        textShadow: "0 4px 15px rgba(0,0,0,0.3)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "12px",
+        lineHeight: "1.2"
         }}>
-        Bonsai Care 🌱
+        Bonsai Care <Leaf size={45} color="#4CAF50" />
       </h1>
 
       <input
@@ -660,8 +671,23 @@ const getPlantMood = (plant) => {
 
       <br /><br />
 
-      <button onClick={getLocation}>
-        📍 Usar mi ubicación
+      <button onClick={getLocation} style={{
+          fontWeight: "bold",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+          transition: "0.3s",
+          padding: "10px 15px",
+          borderRadius: "10px",
+          border: "none",
+          background: isNight ? "rgba(255,255,255,0.15)" : "#e2e8f0",
+          color: textPrimary,
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "8px",
+          margin: "0 auto"
+      }}>
+        <MapPin size={18} /> Usar mi ubicación
       </button>
 
       {loading && <p>⏳ Cargando clima...</p>}
@@ -726,16 +752,16 @@ const getPlantMood = (plant) => {
               justifyContent: "space-around"
             }}>
 
-              <div>
-                <p style={{margin: 0, fontSize: "24px"}}> 💧 </p>
-                <p style={{margin: 0}}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <Droplet size={30} color="#4CAF50" style={{ marginBottom: "5px" }} />
+                <p style={{margin: 0, fontWeight: "bold"}}>
                   {data?.climate.humidity}%
                 </p>
               </div>
 
-              <div>
-                <p style={{margin: 0, fontSize: "24px"}}> 🌡️ </p>
-                <p style={{margin: 0}}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <Thermometer size={30} color="#f59e0b" style={{ marginBottom: "5px" }} />
+                <p style={{margin: 0, fontWeight: "bold"}}>
                   {weatherDescription}
                 </p>
               </div>
@@ -745,6 +771,8 @@ const getPlantMood = (plant) => {
           )}
         
 
+          {plants.length > 0 ? (
+            <>
           {data?.dailyInsight && (
             <div style={{
               marginTop: "20px",
@@ -981,13 +1009,29 @@ const getPlantMood = (plant) => {
           </div>
           </>
           )}
+          </>
+          ) : (
+            <div style={{
+              marginTop: "30px",
+              padding: "30px",
+              borderRadius: "20px",
+              background: isNight ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.5)",
+              border: "1px dashed rgba(76,175,80,0.5)",
+              color: textSecondary
+            }}>
+              <Leaf size={40} color="#4CAF50" style={{ marginBottom: "15px" }} />
+              <h3 style={{ margin: "0 0 10px 0", color: textPrimary }}>Aún no hay plantas</h3>
+              <p style={{ margin: 0 }}>Ve a la pestaña "Plantas" para registrar tu primer bonsái y comenzar a recibir recomendaciones y planes de riego diarios.</p>
+            </div>
+          )}
 
         </div>
       )}
 
           {activeTab === "stats" && (
             <>
-            
+            {plants.length > 0 ? (
+              <>
             <div style={{
               marginTop: "30px",
               padding: "20px",
@@ -1059,6 +1103,21 @@ const getPlantMood = (plant) => {
 
             </div>
           )}
+              </>
+            ) : (
+              <div style={{
+                marginTop: "30px",
+                padding: "30px",
+                borderRadius: "20px",
+                background: isNight ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.5)",
+                border: "1px dashed rgba(76,175,80,0.5)",
+                color: textSecondary
+              }}>
+                <ChartIcon size={40} color="#4CAF50" style={{ marginBottom: "15px" }} />
+                <h3 style={{ margin: "0 0 10px 0", color: textPrimary }}>Sin datos suficientes</h3>
+                <p style={{ margin: 0 }}>Registra tu primera planta para ver la evolución de su salud a través del tiempo.</p>
+              </div>
+            )}
           </>
         )}
           
@@ -1670,7 +1729,7 @@ const getPlantMood = (plant) => {
                   : "none",
               transition: "0.3s"
             }}>
-              <div style={{fontSize:"24px"}}> 🏠 </div>
+              <div style={{display: "flex", justifyContent: "center", marginBottom: "4px"}}> <Home size={24} color={textPrimary} /> </div>
               <div style={{
                 fontSize: "12px",
                 color: textPrimary
@@ -1702,7 +1761,7 @@ const getPlantMood = (plant) => {
                   : "none",
               transition: "0.3s"
             }}>
-              <div style={{ fontSize: "24px" }}>📈</div>
+              <div style={{display: "flex", justifyContent: "center", marginBottom: "4px"}}> <ChartIcon size={24} color={textPrimary} /> </div>
               <div style={{
                 fontSize: "12px",
                 color: textPrimary
@@ -1733,7 +1792,7 @@ const getPlantMood = (plant) => {
                   : "none",
               transition: "0.3s"
             }}>
-              <div style={{fontSize:"24px"}}> 🌱 </div>
+              <div style={{display: "flex", justifyContent: "center", marginBottom: "4px"}}> <Leaf size={24} color={textPrimary} /> </div>
               <div style={{
                 fontSize: "12px",
                 color: textPrimary
@@ -1765,7 +1824,7 @@ const getPlantMood = (plant) => {
                   : "none",
               transition: "0.3s"
             }}>
-              <div style={{fontSize:"24px"}}> 👤 </div>
+              <div style={{display: "flex", justifyContent: "center", marginBottom: "4px"}}> <User size={24} color={textPrimary} /> </div>
               <div style={{
                 fontSize: "12px",
                 color: textPrimary

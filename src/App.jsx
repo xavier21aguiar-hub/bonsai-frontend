@@ -8,7 +8,7 @@ import {LineChart,
   CartesianGrid
 } from "recharts";
 import { motion } from "framer-motion";
-import { Home, LineChart as ChartIcon, Leaf, User, MapPin, Droplet, Sun, CloudRain, Snowflake, Thermometer, Wind, AlertCircle, Plus, LogOut } from "lucide-react";
+import { Home, LineChart as ChartIcon, Leaf, User, MapPin, Droplet, Sun, CloudRain, Snowflake, Thermometer, Wind, AlertCircle, Plus, LogOut, Trash2 } from "lucide-react";
 import BonsaiAvatar from "./BonsaiAvatar";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -297,6 +297,21 @@ const handleAddPlant = async () => {
     loadPlants();
   } catch (e) {
     alert("❌ Error al agregar planta");
+  }
+};
+
+const handleDeletePlant = async (id) => {
+  if (!window.confirm("¿Seguro que quieres eliminar este bonsái?")) return;
+  try {
+    const res = await fetch(`${API_URL}/api/bonsai/${id}`, {
+      method: "DELETE"
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    alert("✅ Bonsái eliminado");
+    loadPlants();
+  } catch (e) {
+    alert("❌ Error al eliminar el bonsái");
   }
 };
 
@@ -1382,19 +1397,35 @@ const getPlantMood = (plant) => {
                     ))}
                   </ul>
 
-                  <button onClick={() => waterPlant(plant._id)}
-                    style={{
-                      marginTop: "15px",
-                      width: "100%",
-                      padding: "12px",
-                      borderRadius: "12px",
-                      border: "none",
-                      background: "#4CAF50",
-                      color: "white",
-                      fontWeight: "bold",
-                      cursor: "pointer",
-                      boxShadow: "0 4px 10px rgba(0,0,0,0.1)"
-                    }}> 💧 Regar </button>
+                  <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
+                    <button onClick={() => waterPlant(plant._id)}
+                      style={{
+                        flex: 1,
+                        padding: "12px",
+                        borderRadius: "12px",
+                        border: "none",
+                        background: "#4CAF50",
+                        color: "white",
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                        boxShadow: "0 4px 10px rgba(0,0,0,0.1)"
+                      }}> 💧 Regar </button>
+
+                    <button onClick={() => handleDeletePlant(plant._id)}
+                      style={{
+                        padding: "12px",
+                        borderRadius: "12px",
+                        border: "none",
+                        background: isNight ? "rgba(229,57,53,0.3)" : "#ffebee",
+                        color: "#e53935",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}>
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
 
                 </motion.div>
               );

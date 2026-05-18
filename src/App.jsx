@@ -1211,6 +1211,8 @@ const getPlantMood = (plant) => {
                 speciesConfig[plant.species] || 
                 speciesConfig.juniper;
 
+              const plantIcon = species.icon;
+
               return(
                 <motion.div
                   key={plant._id}

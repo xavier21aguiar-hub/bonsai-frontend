@@ -18,8 +18,19 @@ function App() {
   const [error, setError] = useState(null);
   const [plants, setPlants] = useState([]);
   const [activeTab, setActiveTab] = useState("home");
-  const  [username, setUsername] = useState(
-    localStorage.getItem("bonsaiUser") || "Jardinero"
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = localStorage.getItem("bonsaiUserObj");
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [authMode, setAuthMode] = useState("login");
+  const [authUsername, setAuthUsername] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [showAddPlant, setShowAddPlant] = useState(false);
+  const [newPlantName, setNewPlantName] = useState("");
+  const [newPlantSpecies, setNewPlantSpecies] = useState("juniper");
+  
+  const [username, setUsername] = useState(
+    currentUser?.username || "Jardinero"
   );
   const avatarUrl =  `https://api.dicebear.com/7.x/adventurer/svg?seed=${username}`;
 
@@ -130,7 +141,7 @@ const healthChartData =
     setError(null);
 
     const response = await fetch(
-      `${API_URL}/api/bonsai/care?city=${city}`
+      `${API_URL}/api/bonsai/care?city=${city}${currentUser ? `&userId=${currentUser._id}` : ""}`
     );
 
     const result = await response.json();
@@ -166,11 +177,13 @@ const getLocation = () => {
         setLoading(true);
 
         const response = await fetch(
-          `${API_URL}/api/bonsai/care?lat=${lat}&lon=${lon}`
+          `${API_URL}/api/bonsai/care?lat=${lat}&lon=${lon}${currentUser ? `&userId=${currentUser._id}` : ""}`
         );
 
         const result = await response.json();
         setData(result);
+        localStorage.setItem("savedLat", lat);
+        localStorage.setItem("savedLon", lon);
 
       } catch (error) {
         setError("Error obteniendo ubicación");
@@ -186,8 +199,9 @@ const getLocation = () => {
 };
 
   const loadPlants = async () => {
+    if (!currentUser) return;
   try {
-    const res = await fetch(`${API_URL}/api/bonsai/all`);
+    const res = await fetch(`${API_URL}/api/bonsai/all?userId=${currentUser._id}`);
     const data = await res.json();
 
     console.log("DATA FROM BACKEND:", data);
@@ -199,14 +213,32 @@ const getLocation = () => {
 };
 
 useEffect(() => {
-  loadPlants();
+  if (currentUser) {
+    loadPlants();
+  }
   const savedCity = localStorage.getItem("favoriteCity");
+  const savedLat = localStorage.getItem("savedLat");
+  const savedLon = localStorage.getItem("savedLon");
 
-  if(savedCity){
+  if (savedLat && savedLon) {
+    setLoading(true);
+    fetch(
+      `${API_URL}/api/bonsai/care?lat=${savedLat}&lon=${savedLon}${currentUser ? `&userId=${currentUser._id}` : ""}`
+    )
+    .then(res => res.json())
+    .then(result => {
+      setData(result);
+      setLoading(false);
+    })
+    .catch(err => {
+      console.error(err);
+      setLoading(false);
+    });
+  } else if(savedCity){
     setCity(savedCity);
 
     fetch(
-      `${API_URL}/api/bonsai/care?city=${savedCity}`
+      `${API_URL}/api/bonsai/care?city=${savedCity}${currentUser ? `&userId=${currentUser._id}` : ""}`
     )
 
     .then(res => res.json())
@@ -217,7 +249,7 @@ useEffect(() => {
       console.error(err);
     });
   }
-}, []);
+}, [currentUser]);
 
 const waterPlant = async (id) => {
   try {
@@ -238,6 +270,26 @@ const waterPlant = async (id) => {
   }
 };
 
+const handleAddPlant = async () => {
+  if (!newPlantName.trim()) return alert("Ingresa un nombre");
+  try {
+    const res = await fetch(`${API_URL}/api/bonsai/create`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: newPlantName, species: newPlantSpecies, userId: currentUser._id })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    alert("✅ Planta agregada");
+    setShowAddPlant(false);
+    setNewPlantName("");
+    setNewPlantSpecies("juniper");
+    loadPlants();
+  } catch (e) {
+    alert("❌ Error al agregar planta");
+  }
+};
+
 const quickWater = () => {
 
   if (plants.length === 0) {
@@ -245,7 +297,30 @@ const quickWater = () => {
     return;
   }
 
-  waterPlant(plants[0]._id);
+  let maxNeedsWater = -1;
+  let plantsToWater = [];
+
+  plants.forEach(plant => {
+    const species = speciesConfig[plant.species] || speciesConfig.juniper;
+    const daysSinceWatering = (Date.now() - new Date(plant.lastWatered)) / (1000 * 60 * 60 * 24);
+    // Calculate how urgently it needs water (ratio of days passed vs ideal water days)
+    const needScore = daysSinceWatering / species.waterEvery;
+
+    // Slight epsilon to group similar scores
+    if (needScore > maxNeedsWater + 0.1) {
+      maxNeedsWater = needScore;
+      plantsToWater = [plant._id];
+    } else if (Math.abs(needScore - maxNeedsWater) <= 0.1 && needScore > 0.8) {
+      plantsToWater.push(plant._id);
+    }
+  });
+
+  if (maxNeedsWater < 0.5) {
+    alert("Todas tus plantas están bien hidratadas 🌱");
+    return;
+  }
+
+  plantsToWater.forEach(id => waterPlant(id));
 };
 
 const calculateStreak = () => {
@@ -450,6 +525,63 @@ const getPlantMood = (plant) => {
       };
   }
 };
+
+  const handleAuth = async () => {
+    try {
+      const endpoint = authMode === "login" ? "/api/auth/login" : "/api/auth/register";
+      const res = await fetch(`${API_URL}${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: authUsername, password: authPassword })
+      });
+      const data = await res.json();
+      if (data.error) {
+        alert(data.error);
+      } else {
+        setCurrentUser(data);
+        setUsername(data.username);
+        localStorage.setItem("bonsaiUserObj", JSON.stringify(data));
+      }
+    } catch (err) {
+      alert("Error de conexión");
+    }
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem("bonsaiUserObj");
+    setPlants([]);
+    setData(null);
+  };
+
+  if (!currentUser) {
+    return (
+      <div style={{
+        display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh",
+        background: isNight ? "#1e293b" : "#f3f4f6", fontFamily: "Arial"
+      }}>
+        <div style={{
+          background: isNight ? "rgba(30,41,59,0.8)" : "white", padding: "40px", borderRadius: "20px",
+          boxShadow: "0 10px 25px rgba(0,0,0,0.1)", textAlign: "center", width: "100%", maxWidth: "400px"
+        }}>
+          <h1 style={{ color: textPrimary, marginBottom: "20px" }}>Bonsai Care 🌱</h1>
+          <h2 style={{ color: textSecondary, marginBottom: "30px" }}>
+            {authMode === "login" ? "Iniciar Sesión" : "Crear Cuenta"}
+          </h2>
+          <input type="text" placeholder="Usuario" value={authUsername} onChange={e => setAuthUsername(e.target.value)}
+            style={{ width: "90%", padding: "12px", marginBottom: "15px", borderRadius: "10px", border: "1px solid #ccc", background: inputBackground, color: textPrimary }} />
+          <input type="password" placeholder="Contraseña" value={authPassword} onChange={e => setAuthPassword(e.target.value)}
+            style={{ width: "90%", padding: "12px", marginBottom: "25px", borderRadius: "10px", border: "1px solid #ccc", background: inputBackground, color: textPrimary }} />
+          <button onClick={handleAuth} style={{ width: "100%", padding: "14px", borderRadius: "10px", border: "none", background: "#4CAF50", color: "white", fontWeight: "bold", cursor: "pointer", marginBottom: "15px" }}>
+            {authMode === "login" ? "Entrar" : "Registrarse"}
+          </button>
+          <p style={{ color: textSecondary, cursor: "pointer" }} onClick={() => setAuthMode(authMode === "login" ? "register" : "login")}>
+            {authMode === "login" ? "¿No tienes cuenta? Regístrate" : "¿Ya tienes cuenta? Inicia sesión"}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
   <div style={{
@@ -932,9 +1064,33 @@ const getPlantMood = (plant) => {
           
         {activeTab === "plants" && (
           <>
-          <h3 style={{marginTop: "25px",
-            color: textPrimary
-          }}>🌿 Mis plantas</h3>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "25px" }}>
+            <h3 style={{ margin: 0, color: textPrimary }}>🌿 Mis plantas</h3>
+            <button onClick={() => setShowAddPlant(!showAddPlant)} style={{
+              background: "#4CAF50", color: "white", border: "none", padding: "8px 15px", borderRadius: "10px", fontWeight: "bold", cursor: "pointer"
+            }}>
+              {showAddPlant ? "Cancelar" : "+ Agregar"}
+            </button>
+          </div>
+
+          {showAddPlant && (
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} style={{
+              marginTop: "20px", padding: "20px", borderRadius: "15px", background: cardBackground, border: "1px solid rgba(255,255,255,0.2)"
+            }}>
+              <h4 style={{ margin: "0 0 15px 0", color: textPrimary }}>Nueva Planta</h4>
+              <input type="text" placeholder="Nombre" value={newPlantName} onChange={(e) => setNewPlantName(e.target.value)}
+                style={{ width: "90%", padding: "10px", marginBottom: "15px", borderRadius: "8px", border: "none", background: inputBackground, color: textPrimary }} />
+              <select value={newPlantSpecies} onChange={(e) => setNewPlantSpecies(e.target.value)}
+                style={{ width: "95%", padding: "10px", marginBottom: "15px", borderRadius: "8px", border: "none", background: inputBackground, color: textPrimary }}>
+                {Object.keys(speciesConfig).map(key => (
+                  <option key={key} value={key} style={{ color: "black" }}>{speciesConfig[key].icon} {key.charAt(0).toUpperCase() + key.slice(1)}</option>
+                ))}
+              </select>
+              <button onClick={handleAddPlant} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "none", background: "#4CAF50", color: "white", fontWeight: "bold", cursor: "pointer" }}>
+                Guardar Planta
+              </button>
+            </motion.div>
+          )}
           
           {plants.length === 0 ? (
             <p>No hay plantas registradas 🌱</p>
@@ -1424,6 +1580,11 @@ const getPlantMood = (plant) => {
                 ))}
               </div>
             </div>
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <button onClick={handleLogout} style={{ padding: "10px 20px", background: "#e53935", color: "white", border: "none", borderRadius: "10px", fontWeight: "bold", cursor: "pointer" }}>
+              Cerrar Sesión
+            </button>
+          </div>
         </div>
     )}
     </motion.div>
